@@ -22,12 +22,12 @@ export default function AddArticle(props: { folderId: string }) {
 
   return (
     <Popover>
-      <PopoverTrigger className="my-4">
-        <Button variant={'outline'} className="outline-none">
+      <PopoverTrigger>
+        <Button variant={'default'} className="outline-none ">
           <PlusIcon /> New Article
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent asChild>
         <form action={formAction} className="flex flex-col space-y-2">
           <div>
             <Label htmlFor="article-add-url">URL</Label>
@@ -38,7 +38,7 @@ export default function AddArticle(props: { folderId: string }) {
               <p className="text-sm text-red-700">{state?.error}</p>
             )}
           </div>
-          <Button disabled={isPending} type="submit">
+          <Button disabled={isPending} type="submit" variant={'secondary'}>
             Save
           </Button>
         </form>

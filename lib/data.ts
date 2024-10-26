@@ -27,5 +27,5 @@ export async function getFolderData(folderId: string, userId: string) {
     'email name _id'
   );
 
-  return folder;
+  return folder.articles;
 }

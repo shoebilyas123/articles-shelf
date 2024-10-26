@@ -5,7 +5,7 @@ import { getFolderData } from '@/lib/data';
 
 import { Input } from '@/components/ui/input';
 import AddArticle from '@/app/forms/add-article';
-import { Folder } from '@/types/folder';
+import { Article, Folder } from '@/types/folder';
 import { Edit, MoreVertical, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,10 +13,15 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
+import SearchBar from '@/app/forms/search';
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ query?: string }>;
+}) {
   const params = await props.params;
-  const folderData: Folder = await getFolderData(
+  const searchParams = await props.searchParams;
+  const articles: Article[] = await getFolderData(
     params.id,
     '671cc61dc03e7c9287ee6f42'
   );
@@ -24,38 +29,44 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   return (
     <div className="w-full flex flex-col">
       <div className="flex flex-row items-center space-x-1 mb-4">
-        <Input placeholder="Search your articles..." className="flex-grow" />
+        <SearchBar />
         <AddArticle folderId={params.id} />
       </div>
 
       <div className="grid gap-1 grid-cols-1">
-        {folderData.articles.map((article) => (
-          <div
-            id={article.url}
-            className="flex items-center w-full justify-between bg-white hover:bg-neutral-100 rounded-md border p-4"
-          >
-            <Link
-              target="_blank"
-              href={article.url}
-              className="text-md text-neutral-800 font-medium hover:text-sky-600"
+        {articles
+          .filter(
+            (art) =>
+              art.title.includes(searchParams.query || '') ||
+              art.url.includes(searchParams.query || '')
+          )
+          .map((article) => (
+            <div
+              id={article.url}
+              className="flex items-center w-full justify-between bg-white hover:bg-neutral-100 rounded-md border p-4"
             >
-              {article.title}
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <MoreVertical className="text-neutral-500" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Edit className="text-neutral-500" /> Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Trash2 className="text-neutral-500" /> Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ))}
+              <Link
+                target="_blank"
+                href={article.url}
+                className="text-md text-neutral-800 font-medium hover:text-sky-600"
+              >
+                {article.title}
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <MoreVertical className="text-neutral-500" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Edit className="text-neutral-500" /> Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Trash2 className="text-neutral-500" /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
       </div>
     </div>
   );
