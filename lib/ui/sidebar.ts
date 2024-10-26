@@ -1,16 +1,32 @@
-import { PlusIcon, Settings2, User2 } from 'lucide-react';
+import { HomeIcon, Settings2, User2, FolderPlusIcon } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 
-export const SIDEBAR_GROUPS = [
+interface SidebarGroupMenu {
+  Icon: any;
+  title: string;
+  variant?: 'outline' | 'default' | null;
+  action: {
+    href: string;
+  };
+}
+interface SidebarGroupData {
+  name: string;
+  menu: SidebarGroupMenu[];
+}
+
+export const SIDEBAR_GROUPS: SidebarGroupData[] = [
   {
-    name: 'Actions',
+    name: 'Application',
     menu: [
       {
-        Icon: PlusIcon,
-        title: 'Add New Shelf',
-        variant: 'outline',
-        action: {
-          href: '/portal/shelf/create',
-        },
+        Icon: HomeIcon,
+        title: 'Home',
+        action: { href: '/portal' },
       },
     ],
   },

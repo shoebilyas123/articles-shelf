@@ -4,8 +4,9 @@ import { z } from 'zod';
 import User from './db/models/user';
 import { redirect } from 'next/navigation';
 import { connectMongoDB } from './db';
-
-// await connectMongoDB();
+import { Folder } from '@/types/folder';
+import folder from './db/models/folder';
+import { revalidatePath } from 'next/cache';
 
 export type AuthState = {
   errors?: {
@@ -36,13 +37,14 @@ const AuthFormSchema = z.object({
 });
 
 export async function registerUser(prevState: AuthState, formData: FormData) {
+  // await connectMongoDB();
+
   const validatedFields = AuthFormSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
     name: formData.get('name'),
   });
 
-  console.log(validatedFields);
   if (!validatedFields.success) {
     return {
       errors: { ...validatedFields.error.flatten().fieldErrors, auth: [] },
@@ -70,4 +72,68 @@ export async function registerUser(prevState: AuthState, formData: FormData) {
   redirect('/auth/login');
 
   return prevState;
+}
+
+export interface ActionsActionState {
+  errors?: {
+    name?: string[];
+  };
+  message?: string | null;
+}
+
+const FolderPayloadSchema = z.object({
+  name: z
+    .string({
+      required_error: 'Folder name is required.',
+      invalid_type_error:
+        'Folder cannot not be numbers or special characters only.',
+    })
+    .min(1, { message: 'Name cannot be empty.' }),
+});
+
+export async function createNewFolder(
+  prevState: ActionsActionState | undefined,
+  formData: FormData
+) {
+  const validatedFields = FolderPayloadSchema.safeParse({
+    name: formData.get('name'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Cannot create folder.',
+    };
+  }
+
+  const { name } = validatedFields.data;
+
+  const folderPayload: Partial<Omit<Folder, 'user'> & { user: string }> = {
+    name: formData.get('name') as string,
+    articles: [],
+    user: '671cc61dc03e7c9287ee6f42', // HANDLE WITH AUTH
+  };
+
+  try {
+    // await connectMongoDB();
+    const folder_doc = await folder.findOne({ name: folderPayload.name });
+
+    if (folder_doc && folder_doc._id) {
+      return {
+        errors: { name: ['Folder already exists.'] },
+        message: 'Cannot create folder.',
+      };
+    }
+
+    await folder.create(folderPayload);
+  } catch (error) {
+    console.log({ error });
+    return {
+      errors: {},
+      message: 'Something went wrong',
+    };
+  }
+
+  revalidatePath('/portal');
+  redirect('/portal');
 }
