@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { Folder } from '@/types/folder';
+import { Folder as FolderType } from '@/types/folder';
 
-interface FolderSchemaType extends Omit<Folder, 'user'> {
+interface FolderSchemaType extends Omit<FolderType, 'user'> {
   user: mongoose.Schema.Types.ObjectId;
 }
 
@@ -23,5 +23,7 @@ const FolderSchema = new Schema<FolderSchemaType>(
   }
 );
 
-export default mongoose.models?.Folder ||
-  model<FolderSchemaType>('Folder', FolderSchema);
+const Folder =
+  mongoose.models.Folder || model<FolderSchemaType>('Folder', FolderSchema);
+
+export default Folder;

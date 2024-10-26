@@ -2,14 +2,14 @@ import { DBDoc } from '@/types/db';
 import mongoose, { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-export interface User extends DBDoc {
+export interface UserType extends DBDoc {
   name: string;
   email: string;
   password?: string;
   avatar?: string;
 }
 
-const UserSchema = new Schema<User>(
+const UserSchema = new Schema<UserType>(
   {
     email: {
       type: String,
@@ -42,4 +42,6 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-export default mongoose.models?.User || model<User>('User', UserSchema);
+const User = mongoose.models?.User || model<UserType>('User', UserSchema);
+
+export default User;

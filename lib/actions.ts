@@ -3,10 +3,11 @@
 import { z } from 'zod';
 import User from './db/models/user';
 import { redirect } from 'next/navigation';
-import { connectMongoDB } from './db';
-import { Folder } from '@/types/folder';
+import { connectMongoDB, Folder as FolderModel } from './db';
+import { Article, Folder } from '@/types/folder';
 import folder from './db/models/folder';
 import { revalidatePath } from 'next/cache';
+import * as cheerio from 'cheerio';
 
 export type AuthState = {
   errors?: {
@@ -136,4 +137,54 @@ export async function createNewFolder(
 
   revalidatePath('/portal');
   redirect('/portal');
+}
+
+const AddNewArticleSchema = z.object({
+  url: z
+    .string({
+      required_error: 'Please enter URL',
+      message: 'Please enter a URL',
+      invalid_type_error: 'Please enter a valid URL',
+    })
+    .min(8),
+});
+
+export async function addNewArticle(
+  folderId: string,
+  _: any,
+  formData: FormData
+) {
+  const validatedFields = AddNewArticleSchema.safeParse({
+    url: formData.get('url'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      error: 'Cannot add URL.',
+    };
+  }
+
+  if (!folderId) {
+    return {
+      error: 'Folder not specified.',
+    };
+  }
+
+  const { url } = validatedFields.data;
+
+  const $ = await cheerio.fromURL(url);
+  const title = $('title').text();
+
+  const article_payload = { url: url, title };
+
+  await connectMongoDB();
+  const folder = await FolderModel.findOne({ _id: folderId });
+
+  if (!folder.articles.some((art: Article) => art.url === url)) {
+    folder.articles = [...folder.articles, { ...article_payload }];
+  }
+
+  await folder.save();
+
+  revalidatePath(`/portal/folder/${folderId}`);
 }

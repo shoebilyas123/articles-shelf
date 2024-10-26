@@ -1,8 +1,7 @@
-import { User } from '@/lib/db/models/user';
+import { UserType } from '@/lib/db/models/user';
 import { DBDoc } from './db';
 
 export interface Article {
-  id: string;
   title: string;
   url: string;
 }
@@ -16,5 +15,5 @@ export interface Folder extends DBDoc {
   };
 
   articles: Article[];
-  user: Partial<User>;
+  user: Partial<UserType>;
 }

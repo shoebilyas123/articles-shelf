@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { getUserFolders } from '@/lib/data';
 
 import { Card } from '@/components/ui/card';
+import { Folder } from '@/types/folder';
 
 export default async function Folders() {
-  const folders = await getUserFolders('671cc61dc03e7c9287ee6f42');
+  const folders: Array<Omit<Folder, 'articles'> & { articles: number }> =
+    await getUserFolders('671cc61dc03e7c9287ee6f42');
 
   return (
     <div className="grid gap-2 grid-cols-1 md:grid-cols-4">
@@ -22,7 +24,7 @@ export default async function Folders() {
             <div className="flex flex-col items-between">
               <p className="text-sm font-medium">{folder.name}</p>
               <p className="text-xs text-gray-500">
-                {folder.articles.length} articles
+                {folder.articles} articles
               </p>
             </div>
           </Link>
