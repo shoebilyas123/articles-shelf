@@ -1,13 +1,13 @@
 import { connectMongoDB, Folder } from '@/lib/db';
 import { Folder as FolderType } from '@/types/folder';
 
-export async function getUserFolders(userId: string) {
+export async function getUserFolders(userId: string, query?: string) {
   await connectMongoDB();
 
-  let folders = await Folder.find({ user: userId }).populate(
-    'user',
-    'name email _id'
-  );
+  let folders = await Folder.find({
+    user: userId,
+    ...(query && { name: new RegExp(`${query}`, 'g') }),
+  }).populate('user', 'name email _id');
 
   let folders_transformed: Array<
     Omit<FolderType, 'articles'> & { articles: number }
