@@ -10,8 +10,6 @@ export default async function Layout({
 }) {
   const session = await auth();
 
-  if (!session?.user) redirect('/auth/login');
-
   return (
     <div className=" flex flex-row bg-neutral-100">
       <div>

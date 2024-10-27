@@ -11,10 +11,6 @@ export default async function Page(props: {
 }) {
   const session = await auth();
 
-  console.log(session);
-
-  if (!session?.user) redirect('/auth/login');
-
   const searchParams = await props.searchParams;
   const query = searchParams?.query;
 

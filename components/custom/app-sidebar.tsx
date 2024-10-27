@@ -15,7 +15,7 @@ import {
 import { LogOutIcon } from 'lucide-react';
 import Link from 'next/link';
 import { SIDEBAR_GROUPS } from '@/lib/ui/sidebar';
-import { signOut } from '@/auth';
+import { signOutAction } from '@/lib/actions';
 
 export default function AppSidebar() {
   return (
@@ -55,12 +55,7 @@ export default function AppSidebar() {
           ))}
         </SidebarContent>
         <SidebarFooter>
-          <form
-            action={async () => {
-              'use server';
-              await signOut();
-            }}
-          >
+          <form action={signOutAction}>
             <SidebarMenuButton variant="outline" type="submit">
               <LogOutIcon className="text-red-600" />
               <span>Logout</span>

@@ -14,7 +14,7 @@ import {
 } from '@/types/actions';
 import { AddNewArticleSchema, AuthFormSchema } from '@/types/zod';
 import { z } from 'zod';
-import { signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 
 export async function registerUser(prevState: AuthState, formData: FormData) {
   await connectMongoDB();
@@ -154,8 +154,18 @@ export async function addNewArticle(
 
 export async function signInAction(formData: FormData) {
   try {
-    await signIn('credentials', formData);
-    redirect('/auth/login?success=true');
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function signOutAction() {
+  try {
+    await signOut({ redirectTo: '/auth/login' });
   } catch (error) {
     console.log(error);
   }
