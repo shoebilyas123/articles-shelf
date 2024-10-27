@@ -12,30 +12,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     session: async ({ session, token }) => {
       session.userId = token.sub as string;
-
       return Promise.resolve(session);
     },
     authorized: async ({ auth, request: { nextUrl } }) => {
       const isLoggedIn = !!auth?.user;
       const isOnLogin = nextUrl.pathname.startsWith('/auth');
-
-      console.log(auth);
-
       if (!isLoggedIn) {
         return false;
       }
-
       if (isOnLogin && isLoggedIn) {
         return Response.redirect(new URL('/portal', nextUrl));
       }
-
       return true;
     },
     signIn: async ({ user }) => {
       if (!user || !user?.id) {
         return false;
       }
-
       return true;
     },
   },
@@ -72,8 +65,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-
-  session: {
-    strategy: 'jwt',
-  },
 });

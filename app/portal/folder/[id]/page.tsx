@@ -20,12 +20,11 @@ export default async function Page(props: {
   searchParams: Promise<{ query?: string }>;
 }) {
   const session = await auth();
-
   const params = await props.params;
   const searchParams = await props.searchParams;
   const articles: Article[] = await getFolderData(
     params.id,
-    session?.user?.id || '671cc61dc03e7c9287ee6f42'
+    (session as any)?.userId
   );
 
   return (

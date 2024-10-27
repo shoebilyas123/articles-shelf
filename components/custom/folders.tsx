@@ -5,10 +5,12 @@ import { getUserFolders } from '@/lib/data';
 
 import { Card } from '@/components/ui/card';
 import { Folder } from '@/types/folder';
+import { auth } from '@/auth';
 
 export default async function Folders(props: { query: string | null }) {
+  const session = await auth();
   const folders: Array<Omit<Folder, 'articles'> & { articles: number }> =
-    await getUserFolders('671cc61dc03e7c9287ee6f42', props.query || '');
+    await getUserFolders((session as any)?.userId, props.query || '');
 
   return (
     <div className="grid gap-2 grid-cols-1 md:grid-cols-4">

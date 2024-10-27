@@ -9,8 +9,6 @@ import { redirect } from 'next/navigation';
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string }>;
 }) {
-  const session = await auth();
-
   const searchParams = await props.searchParams;
   const query = searchParams?.query;
 

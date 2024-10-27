@@ -158,6 +158,7 @@ export async function signInAction(formData: FormData) {
       email: formData.get('email'),
       password: formData.get('password'),
     });
+    redirect('/portal');
   } catch (error) {
     console.log(error);
   }
@@ -165,7 +166,8 @@ export async function signInAction(formData: FormData) {
 
 export async function signOutAction() {
   try {
-    await signOut({ redirectTo: '/auth/login' });
+    await signOut({ redirectTo: 'http://localhost:3000/auth/login' });
+    redirect('/auth/login');
   } catch (error) {
     console.log(error);
   }
