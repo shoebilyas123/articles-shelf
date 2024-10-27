@@ -24,6 +24,6 @@ const FolderSchema = new Schema<FolderSchemaType>(
 );
 
 const Folder =
-  mongoose.models.Folder || model<FolderSchemaType>('Folder', FolderSchema);
+  mongoose.models?.Folder || model<FolderSchemaType>('Folder', FolderSchema);
 
 export default Folder;

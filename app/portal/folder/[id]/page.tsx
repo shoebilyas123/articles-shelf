@@ -3,9 +3,8 @@ import Link from 'next/link';
 
 import { getFolderData } from '@/lib/data';
 
-import { Input } from '@/components/ui/input';
 import AddArticle from '@/app/forms/add-article';
-import { Article, Folder } from '@/types/folder';
+import { Article } from '@/types/folder';
 import { Edit, MoreVertical, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -13,22 +12,26 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
+import { auth } from '@/auth';
 import SearchBar from '@/app/forms/search';
 
 export default async function Page(props: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ query?: string }>;
 }) {
+  const session = await auth();
+
+  console.log(session);
   const params = await props.params;
   const searchParams = await props.searchParams;
   const articles: Article[] = await getFolderData(
     params.id,
-    '671cc61dc03e7c9287ee6f42'
+    session?.user?.id || ''
   );
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-row items-center space-x-1 mb-4">
+      <div className="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:space-x-1 mb-4">
         <SearchBar />
         <AddArticle folderId={params.id} />
       </div>
@@ -42,7 +45,7 @@ export default async function Page(props: {
           )
           .map((article) => (
             <div
-              id={article.url}
+              key={article.url}
               className="flex items-center w-full justify-between bg-white hover:bg-neutral-100 rounded-md border p-4"
             >
               <Link

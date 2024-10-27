@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -11,20 +11,11 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarGroupContent,
-  SidebarMenuAction,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { LogOutIcon, FolderPlusIcon } from 'lucide-react';
+import { LogOutIcon } from 'lucide-react';
 import Link from 'next/link';
 import { SIDEBAR_GROUPS } from '@/lib/ui/sidebar';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { signOut } from '@/auth';
 
 export default function AppSidebar() {
   return (
@@ -32,28 +23,14 @@ export default function AppSidebar() {
       <Sidebar>
         <SidebarHeader>Articles Shelf</SidebarHeader>
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Actions</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/portal/folder/create">
-                    <FolderPlusIcon />
-                    New Folder
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-
           {SIDEBAR_GROUPS.map((grp, index) => (
-            <SidebarGroup id={grp.name + index}>
+            <SidebarGroup key={grp.name + index}>
               <SidebarGroupLabel>{grp.name}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {grp.menu.map((item, index) => (
                     <SidebarMenuItem
-                      id={index + item.title + Math.random().toString(6)}
+                      key={index + item.title + Math.random().toString(6)}
                     >
                       <SidebarMenuButton
                         variant={
@@ -78,10 +55,17 @@ export default function AppSidebar() {
           ))}
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenuButton variant="outline">
-            <LogOutIcon className="text-red-600" />
-            <span>Logout</span>
-          </SidebarMenuButton>
+          <form
+            action={async () => {
+              'use server';
+              await signOut();
+            }}
+          >
+            <SidebarMenuButton variant="outline" type="submit">
+              <LogOutIcon className="text-red-600" />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </form>
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

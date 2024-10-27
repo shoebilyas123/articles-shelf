@@ -1,6 +1,5 @@
 'use server';
 
-import { z } from 'zod';
 import User from './db/models/user';
 import { redirect } from 'next/navigation';
 import { connectMongoDB, Folder as FolderModel } from './db';
@@ -8,37 +7,17 @@ import { Article, Folder } from '@/types/folder';
 import folder from './db/models/folder';
 import { revalidatePath } from 'next/cache';
 import * as cheerio from 'cheerio';
-
-export type AuthState = {
-  errors?: {
-    name?: string[];
-    email?: string[];
-    password?: string[];
-    auth?: string[];
-  };
-  message?: string | null;
-};
-
-const AuthFormSchema = z.object({
-  email: z
-    .string({
-      message: 'Please enter your email.',
-    })
-    .email({
-      message: 'Please enter a valid email.',
-    }),
-  name: z
-    .string({ message: 'Please enter your name' })
-    .min(4, { message: 'Name must be 4 characters long' }),
-  password: z
-    .string({
-      message: 'Please create a password',
-    })
-    .min(6, { message: 'Password must be 6 characters long' }),
-});
+import {
+  AuthState,
+  NewArticleState,
+  ActionsActionState,
+} from '@/types/actions';
+import { AddNewArticleSchema, AuthFormSchema } from '@/types/zod';
+import { z } from 'zod';
+import { signIn } from '@/auth';
 
 export async function registerUser(prevState: AuthState, formData: FormData) {
-  // await connectMongoDB();
+  await connectMongoDB();
 
   const validatedFields = AuthFormSchema.safeParse({
     email: formData.get('email'),
@@ -63,8 +42,9 @@ export async function registerUser(prevState: AuthState, formData: FormData) {
       };
     }
 
-    const user = await User.create({ email, password, name });
+    await User.create({ email, password, name });
   } catch (error) {
+    console.log(error);
     return {
       errors: {},
       message: 'Internal Server Error',
@@ -73,13 +53,6 @@ export async function registerUser(prevState: AuthState, formData: FormData) {
   redirect('/auth/login');
 
   return prevState;
-}
-
-export interface ActionsActionState {
-  errors?: {
-    name?: string[];
-  };
-  message?: string | null;
 }
 
 const FolderPayloadSchema = z.object({
@@ -110,13 +83,13 @@ export async function createNewFolder(
   const { name } = validatedFields.data;
 
   const folderPayload: Partial<Omit<Folder, 'user'> & { user: string }> = {
-    name: formData.get('name') as string,
+    name: name,
     articles: [],
     user: '671cc61dc03e7c9287ee6f42', // HANDLE WITH AUTH
   };
 
   try {
-    // await connectMongoDB();
+    await connectMongoDB();
     const folder_doc = await folder.findOne({ name: folderPayload.name });
 
     if (folder_doc && folder_doc._id) {
@@ -139,19 +112,9 @@ export async function createNewFolder(
   redirect('/portal');
 }
 
-const AddNewArticleSchema = z.object({
-  url: z
-    .string({
-      required_error: 'Please enter URL',
-      message: 'Please enter a URL',
-      invalid_type_error: 'Please enter a valid URL',
-    })
-    .min(8),
-});
-
 export async function addNewArticle(
   folderId: string,
-  _: any,
+  _: NewArticleState | undefined,
   formData: FormData
 ) {
   const validatedFields = AddNewArticleSchema.safeParse({
@@ -187,4 +150,13 @@ export async function addNewArticle(
   await folder.save();
 
   revalidatePath(`/portal/folder/${folderId}`);
+}
+
+export async function signInAction(formData: FormData) {
+  try {
+    await signIn('credentials', formData);
+    redirect('/auth/login?success=true');
+  } catch (error) {
+    console.log(error);
+  }
 }

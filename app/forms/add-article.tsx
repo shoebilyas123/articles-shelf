@@ -12,18 +12,20 @@ import { Label } from '@/components/ui/label';
 import { PlusIcon } from 'lucide-react';
 import { useActionState } from 'react';
 import { addNewArticle } from '@/lib/actions';
+import { NewArticleState } from '@/types/actions';
 
 export default function AddArticle(props: { folderId: string }) {
+  const intialState: NewArticleState = {};
   const addNewArticleFunc = addNewArticle.bind(undefined, props.folderId);
   const [state, formAction, isPending] = useActionState(
     addNewArticleFunc,
-    undefined
+    intialState
   );
 
   return (
     <Popover>
       <PopoverTrigger>
-        <Button variant={'default'} className="outline-none ">
+        <Button variant={'default'} className="w-full flex-grow ">
           <PlusIcon /> New Article
         </Button>
       </PopoverTrigger>
@@ -38,7 +40,7 @@ export default function AddArticle(props: { folderId: string }) {
               <p className="text-sm text-red-700">{state?.error}</p>
             )}
           </div>
-          <Button disabled={isPending} type="submit" variant={'secondary'}>
+          <Button disabled={isPending} type="submit" variant={'outline'}>
             Save
           </Button>
         </form>

@@ -10,11 +10,14 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AuthState, registerUser } from '@/lib/actions';
+import { AuthState } from '@/types/actions';
+import { registerUser } from '@/lib/actions';
 import Link from 'next/link';
 import React, { useActionState, useState, useEffect } from 'react';
 
 import { toast } from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('');
@@ -39,7 +42,7 @@ export default function RegisterForm() {
         <CardHeader>
           <CardTitle>Get Started</CardTitle>
           <CardDescription>
-            Welcome to Artica - Let's create your account
+            Welcome to Artica - Let&apos;s create your account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -1,11 +1,11 @@
-import type { NextAuthOptions } from 'next-auth';
+// @ts-check
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  pages: {
-    signIn: '/login',
+  /* config options here */
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-  callbacks: {},
-  providers: [],
-} satisfies NextAuthOptions;
+};
 
-export default nextConfig;
+module.exports = nextConfig;

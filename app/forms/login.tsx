@@ -10,27 +10,22 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AuthState, registerUser } from '@/lib/actions';
 import Link from 'next/link';
-import React, { useActionState, useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { signInAction } from '@/lib/actions';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  //   const [state, formAction, isPending] = useActionState(
-  //     authenticate,
-  //     undefined
-  //   );
-
   return (
-    <form
-    // action={formAction}
-    >
+    <form action={signInAction}>
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Welcome Back!</CardTitle>
-          <CardDescription>Let's log you in!</CardDescription>
+          <CardDescription>Let&apos;s log you in!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -60,7 +55,7 @@ export default function LoginForm() {
         </CardContent>
         <CardFooter className="flex flex-col justify-center">
           <p className="text-sm mb-4">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               href="/auth/register"
               className="font-bold hover:text-slate-600 hover:underline"

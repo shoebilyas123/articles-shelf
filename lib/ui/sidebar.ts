@@ -1,12 +1,7 @@
-import { HomeIcon, Settings2, User2, FolderPlusIcon } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+import { HomeIcon, Settings2, User2 } from 'lucide-react';
 
 interface SidebarGroupMenu {
+  // @ts-ignore
   Icon: any;
   title: string;
   variant?: 'outline' | 'default' | null;

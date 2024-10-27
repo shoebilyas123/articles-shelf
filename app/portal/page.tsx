@@ -1,38 +1,29 @@
 import React from 'react';
 
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarProvider,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
-import { Input } from '@/components/ui/input';
-import { LogOutIcon, PlusIcon, Settings2, User2 } from 'lucide-react';
-import Link from 'next/link';
-import AppSidebar from '@/components/custom/app-sidebar';
 import Folders from '@/components/custom/folders';
 import SearchBar from '../forms/search';
-
-const DUMMY_user = {
-  name: 'Shoeb Ilyas',
-  email: 'shoebilyas123@gmail.com',
-};
+import CreateFolderForm from '../forms/create-folder';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string }>;
 }) {
+  const session = await auth();
+
+  console.log(session);
+
+  if (!session?.user) redirect('/auth/login');
+
   const searchParams = await props.searchParams;
   const query = searchParams?.query;
 
   return (
     <main>
-      <SearchBar />
+      <div className="flex flex-col md:flex-row md:items-center space-x-1 mb-4">
+        <SearchBar />
+        <CreateFolderForm />
+      </div>
       <Folders query={query || null} />
     </main>
   );

@@ -1,6 +1,6 @@
 import { DBDoc } from '@/types/db';
 import mongoose, { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export interface UserType extends DBDoc {
   name: string;
@@ -41,6 +41,13 @@ UserSchema.pre('save', async function (next) {
 
   next();
 });
+
+UserSchema.methods.isCorrectPassword = async function (
+  candidatePassword: string,
+  userPassword: string
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.models?.User || model<UserType>('User', UserSchema);
 
