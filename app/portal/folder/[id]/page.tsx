@@ -12,19 +12,17 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { auth } from '@/auth';
 import SearchBar from '@/app/forms/search';
 
 export default async function Page(props: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ query?: string }>;
 }) {
-  const session = await auth();
   const params = await props.params;
   const searchParams = await props.searchParams;
   const articles: Article[] = await getFolderData(
     params.id,
-    (session as any)?.userId
+    '671cc61dc03e7c9287ee6f42'
   );
 
   return (

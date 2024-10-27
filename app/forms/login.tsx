@@ -11,17 +11,33 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import React, { useState } from 'react';
-import { signInAction } from '@/lib/actions';
-import { useSession } from 'next-auth/react';
+import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const onLoginHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const res = await response.json();
+      if (res.status === 200) {
+        router.push('/portal');
+      }
+    } catch (err) {}
+  };
 
   return (
-    <form action={signInAction}>
+    <form onSubmit={onLoginHandler}>
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Welcome Back!</CardTitle>

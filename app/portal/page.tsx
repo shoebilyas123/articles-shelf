@@ -3,8 +3,6 @@ import React from 'react';
 import Folders from '@/components/custom/folders';
 import SearchBar from '../forms/search';
 import CreateFolderForm from '../forms/create-folder';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string }>;

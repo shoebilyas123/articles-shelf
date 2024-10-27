@@ -16,8 +16,6 @@ import Link from 'next/link';
 import React, { useActionState, useState, useEffect } from 'react';
 
 import { toast } from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('');

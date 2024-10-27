@@ -14,11 +14,8 @@ import {
 } from '@/types/actions';
 import { AddNewArticleSchema, AuthFormSchema } from '@/types/zod';
 import { z } from 'zod';
-import { signIn, signOut } from '@/auth';
 
 export async function registerUser(prevState: AuthState, formData: FormData) {
-  await connectMongoDB();
-
   const validatedFields = AuthFormSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -89,7 +86,6 @@ export async function createNewFolder(
   };
 
   try {
-    await connectMongoDB();
     const folder_doc = await folder.findOne({ name: folderPayload.name });
 
     if (folder_doc && folder_doc._id) {
@@ -140,7 +136,6 @@ export async function addNewArticle(
 
   const article_payload = { url: url, title };
 
-  await connectMongoDB();
   const folder = await FolderModel.findOne({ _id: folderId });
 
   if (!folder.articles.some((art: Article) => art.url === url)) {
@@ -150,25 +145,4 @@ export async function addNewArticle(
   await folder.save();
 
   revalidatePath(`/portal/folder/${folderId}`);
-}
-
-export async function signInAction(formData: FormData) {
-  try {
-    await signIn('credentials', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-    });
-    redirect('/portal');
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function signOutAction() {
-  try {
-    await signOut({ redirectTo: 'http://localhost:3000/auth/login' });
-    redirect('/auth/login');
-  } catch (error) {
-    console.log(error);
-  }
 }
